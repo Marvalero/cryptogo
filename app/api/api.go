@@ -1,10 +1,17 @@
 package api
 
 import (
+	"fmt"
 	"net/http"
 )
 
-func ShowExchange(w http.ResponseWriter, r *http.Request) {
+type ExchangeApi struct {
+	Exchannel chan float64
+}
+
+func (exc ExchangeApi) ShowExchange(w http.ResponseWriter, r *http.Request) {
 	w.WriteHeader(http.StatusOK)
-	w.Write([]byte("exchange"))
+	currentExchange := <-exc.Exchannel
+	message := fmt.Sprintf("exchange: %.6f", currentExchange)
+	w.Write([]byte(message))
 }

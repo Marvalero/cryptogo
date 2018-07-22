@@ -7,9 +7,10 @@ import (
 	"github.com/Marvalero/cryptogo/app/api"
 )
 
-func Run() {
+func Run(readChan chan float64) {
 	http.HandleFunc("/ping", withLogging(pong))
-	http.HandleFunc("/exchange", withLogging(api.ShowExchange))
+	excApi := api.ExchangeApi{Exchannel: readChan}
+	http.HandleFunc("/exchange", withLogging(excApi.ShowExchange))
 	http.HandleFunc("/", withLogging(notFound))
 	fmt.Println("Serving on port 8080")
 	if err := http.ListenAndServe(":8080", nil); err != nil {
