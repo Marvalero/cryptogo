@@ -1,0 +1,2 @@
+# cryptogo
+Fetch exchange rates
