@@ -9,7 +9,7 @@ import (
 
 type Exchange struct {
 	ReadCurrentValue  chan float64
-	ReadNewValue      chan float64
+	ObserveNewValue   chan float64
 	WriteCurrentValue chan float64
 	currentValue      float64
 	upLimit           float64
@@ -38,7 +38,7 @@ func (exc Exchange) handleExchange() {
 		case exc.ReadCurrentValue <- exc.currentValue:
 			continue
 		case exc.currentValue = <-exc.WriteCurrentValue:
-			exc.ReadNewValue <- exc.currentValue
+			exc.ObserveNewValue <- exc.currentValue
 			continue
 		}
 	}
@@ -47,8 +47,8 @@ func (exc Exchange) handleExchange() {
 func NewExchange(currency string, upLimit float64, downLimit float64) Exchange {
 	writeCurrentValue := make(chan float64)
 	readCurrentValue := make(chan float64)
-	readNewValue := make(chan float64, 10)
-	exc := Exchange{readCurrentValue, writeCurrentValue, readNewValue, downLimit + 0.01, upLimit, downLimit, currency}
+	observeNewValue := make(chan float64, 10)
+	exc := Exchange{readCurrentValue, writeCurrentValue, observeNewValue, downLimit + 0.01, upLimit, downLimit, currency}
 
 	go exc.handleExchange()
 	go exc.beepIfLimitReached()

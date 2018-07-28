@@ -18,13 +18,13 @@ func calculateExchange(exc Exchange, client HttpClient) {
 		url := fmt.Sprint("https://min-api.cryptocompare.com/data/price?fsym=", exc.Currency, "&tsyms=USD,GBP,EUR&tryConversion=false")
 		resp, err := client.Get(url)
 		if err != nil {
-			fmt.Println("Error calling cryptocompare")
+			fmt.Println("Error calling cryptocompare:", err)
 			time.Sleep(5 * time.Second)
 			continue
 		}
 		defer resp.Body.Close()
 		writeResponse(resp.Body, exc)
-		time.Sleep(5 * time.Second)
+		time.Sleep(10 * time.Second)
 	}
 }
 
@@ -35,6 +35,5 @@ func writeResponse(Body io.Reader, exc Exchange) {
 		fmt.Println("Error calling Unmarshal")
 		return
 	}
-	fmt.Println("Current exchange from ", exc.Currency, " to GBP:", dat["GBP"])
 	exc.WriteCurrentValue <- dat["GBP"]
 }

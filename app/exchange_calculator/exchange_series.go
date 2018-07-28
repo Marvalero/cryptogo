@@ -11,29 +11,27 @@ type Serie struct {
 	Timestamp int64
 }
 
-func StartExchangeCalculator(client HttpClient) chan [100]Serie {
-	ethExc := NewExchange("ETH", 380.0, 320.0)
-	btcExc := NewExchange("BTC", 6300.0, 6100.0)
-
-	go calculateExchange(ethExc, client)
-	go calculateExchange(btcExc, client)
-	return newExchangeSeries(ethExc.ReadNewValue)
+func StartExchangeCalculator(client HttpClient, currency string, uplimit float64, downlimit float64) chan [100]Serie {
+	exc := NewExchange(currency, uplimit, downlimit)
+	go calculateExchange(exc, client)
+	return newExchangeSeries(exc)
 }
 
-func newExchangeSeries(newValueObserver chan float64) chan [100]Serie {
+func newExchangeSeries(exchange Exchange) chan [100]Serie {
 	readSeriesChan := make(chan [100]Serie)
-	go exchangeSeries(newValueObserver, readSeriesChan)
+	go exchangeSeries(exchange, readSeriesChan)
 	return readSeriesChan
 }
 
-func exchangeSeries(newValueObserver chan float64, seriesChan chan [100]Serie) {
+func exchangeSeries(exchange Exchange, seriesChan chan [100]Serie) {
 	var series [100]Serie
+	currentVal := <-exchange.ReadCurrentValue
 	for i, _ := range series {
-		series[i] = Serie{0.0, makeTimestamp()}
+		series[i] = Serie{currentVal, makeTimestamp()}
 	}
 	for {
 		select {
-		case value := <-newValueObserver:
+		case value := <-exchange.ObserveNewValue:
 			newPoint := Serie{value, makeTimestamp()}
 			series[0] = newPoint
 			sort.Slice(series[:], func(i, j int) bool { return series[i].Timestamp < series[j].Timestamp })

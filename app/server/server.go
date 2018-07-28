@@ -8,10 +8,12 @@ import (
 	"github.com/Marvalero/cryptogo/app/exchange_calculator"
 )
 
-func Run(readChan chan [100]exchange_calculator.Serie) {
+func Run(readEthChan chan [100]exchange_calculator.Serie, readBtcChan chan [100]exchange_calculator.Serie) {
 	http.HandleFunc("/ping", withLogging(pong))
-	excApi := api.ExchangeApi{Exchannel: readChan}
-	http.HandleFunc("/exchange", withLogging(excApi.ShowExchange))
+	ethApi := api.ExchangeApi{Exchannel: readEthChan}
+	btcApi := api.ExchangeApi{Exchannel: readBtcChan}
+	http.HandleFunc("/eth", withLogging(ethApi.ShowExchange))
+	http.HandleFunc("/btc", withLogging(btcApi.ShowExchange))
 	http.HandleFunc("/", withLogging(notFound))
 	fmt.Println("Serving on port 8080")
 	if err := http.ListenAndServe(":8080", nil); err != nil {
