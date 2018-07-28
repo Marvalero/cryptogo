@@ -36,14 +36,5 @@ func writeResponse(Body io.Reader, exc Exchange) {
 		return
 	}
 	fmt.Println("Current exchange from ", exc.Currency, " to GBP:", dat["GBP"])
-	exc.WriteChan <- dat["GBP"]
-}
-
-func StartExchangeCalculator(client HttpClient) chan float64 {
-	ethExc := NewExchange("ETH", 380.0, 320.0)
-	btcExc := NewExchange("BTC", 6300.0, 6100.0)
-
-	go calculateExchange(ethExc, client)
-	go calculateExchange(btcExc, client)
-	return ethExc.ReadChan
+	exc.WriteCurrentValue <- dat["GBP"]
 }

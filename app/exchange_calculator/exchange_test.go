@@ -13,8 +13,8 @@ var exchangeTestCases = []struct {
 func TestExchange(t *testing.T) {
 	for _, testCase := range exchangeTestCases {
 		exchange := NewExchange("BGP", 20.0, 1.0)
-		exchange.WriteChan <- testCase.write
-		read := <-exchange.ReadChan
+		exchange.WriteCurrentValue <- testCase.write
+		read := <-exchange.ReadCurrentValue
 		if read != testCase.read {
 			t.Errorf("Exchange returned %f but expected %f", read, testCase.read)
 		}

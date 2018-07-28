@@ -5,9 +5,10 @@ import (
 	"net/http"
 
 	"github.com/Marvalero/cryptogo/app/api"
+	"github.com/Marvalero/cryptogo/app/exchange_calculator"
 )
 
-func Run(readChan chan float64) {
+func Run(readChan chan [100]exchange_calculator.Serie) {
 	http.HandleFunc("/ping", withLogging(pong))
 	excApi := api.ExchangeApi{Exchannel: readChan}
 	http.HandleFunc("/exchange", withLogging(excApi.ShowExchange))
