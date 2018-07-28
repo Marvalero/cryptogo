@@ -13,34 +13,37 @@ type HttpClient interface {
 	Get(url string) (*http.Response, error)
 }
 
-func calculateExchange(writeChan chan float64, client HttpClient) {
+func calculateExchange(exc Exchange, client HttpClient) {
 	for {
-		resp, err := client.Get("https://min-api.cryptocompare.com/data/price?fsym=ETH&tsyms=USD,GBP,EUR&tryConversion=false")
+		url := fmt.Sprint("https://min-api.cryptocompare.com/data/price?fsym=", exc.Currency, "&tsyms=USD,GBP,EUR&tryConversion=false")
+		resp, err := client.Get(url)
 		if err != nil {
 			fmt.Println("Error calling cryptocompare")
 			time.Sleep(5 * time.Second)
 			continue
 		}
 		defer resp.Body.Close()
-		writeResponse(resp.Body, writeChan)
+		writeResponse(resp.Body, exc)
 		time.Sleep(5 * time.Second)
 	}
 }
 
-func writeResponse(Body io.Reader, writeChan chan float64) {
+func writeResponse(Body io.Reader, exc Exchange) {
 	body, _ := ioutil.ReadAll(Body)
 	var dat map[string]float64
 	if err := json.Unmarshal(body, &dat); err != nil {
 		fmt.Println("Error calling Unmarshal")
 		return
 	}
-	fmt.Println("Current exchange GBP:", dat["GBP"])
-	writeChan <- dat["GBP"]
+	fmt.Println("Current exchange from ", exc.Currency, " to GBP:", dat["GBP"])
+	exc.WriteChan <- dat["GBP"]
 }
 
 func StartExchangeCalculator(client HttpClient) chan float64 {
-	exc := NewExchange()
+	ethExc := NewExchange("ETH", 380.0, 320.0)
+	btcExc := NewExchange("BTC", 6300.0, 6100.0)
 
-	go calculateExchange(exc.WriteChan, client)
-	return exc.ReadChan
+	go calculateExchange(ethExc, client)
+	go calculateExchange(btcExc, client)
+	return ethExc.ReadChan
 }

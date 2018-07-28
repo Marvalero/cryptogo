@@ -12,7 +12,7 @@ var exchangeTestCases = []struct {
 
 func TestExchange(t *testing.T) {
 	for _, testCase := range exchangeTestCases {
-		exchange := NewExchange()
+		exchange := NewExchange("BGP", 20.0, 1.0)
 		exchange.WriteChan <- testCase.write
 		read := <-exchange.ReadChan
 		if read != testCase.read {

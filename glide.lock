@@ -1,4 +1,34 @@
-hash: 01e9339b4b3da1daca01935069a60ed3fb170aeb87e7341482051d59f274a283
-updated: 2018-07-22T15:22:18.203135756+01:00
-imports: []
+hash: 5378db875acd4cbfcb8fdbd6f00d29656c718d4b5c1ac37e6209979fd5fe239f
+updated: 2018-07-28T13:28:44.995077299+01:00
+imports:
+- name: github.com/faiface/beep
+  version: 32585d5e8030a2a1da6244ff6f5434bedad4c2dd
+  subpackages:
+  - mp3
+  - speaker
+- name: github.com/gopherjs/gopherjs
+  version: 0892b62f0d9fb5857760c3cfca837207185117ee
+  subpackages:
+  - js
+- name: github.com/gopherjs/gopherwasm
+  version: f02b5938d19774383abccdfe0271e1a40651b4ad
+  subpackages:
+  - js
+- name: github.com/hajimehoshi/go-mp3
+  version: 90191ee719ddc192865cd96bdc8013ef1ed6dbea
+  subpackages:
+  - internal/bits
+  - internal/consts
+  - internal/frame
+  - internal/frameheader
+  - internal/huffman
+  - internal/imdct
+  - internal/maindata
+  - internal/sideinfo
+- name: github.com/hajimehoshi/oto
+  version: 57347036b3129dfca1125a8e59df48d2b4802e07
+  subpackages:
+  - internal/jni
+- name: github.com/pkg/errors
+  version: 816c9085562cd7ee03e7f8188a1cfd942858cded
 testImports: []
